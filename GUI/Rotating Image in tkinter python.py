@@ -9,27 +9,26 @@ root.geometry("400x500")
 m = Image.open("start-jarvis.png")
 a=1
 def hello():
-    global lab
-    global z
+    global but
     global img
     global a
     a=a-5
     z=m.rotate(a)
     img=ImageTk.PhotoImage(z)
-    lab.config(image=img)
-    lab.after(50,hello)
+    but.config(image=img)
+    but.after(50,hello)
 
 
-z=m.rotate(50)
-img=ImageTk.PhotoImage(z)
+img=ImageTk.PhotoImage(m)
 
-lab=Label(root,image=img)
-lab.pack()
+# lab=Label(root,image=img)
+# lab.pack()
 
-hello()
+but=Button(root,image=img, command=hello,borderwidth=0)
+but.pack(pady=10)
+
+
 root.mainloop()
 
-# but=Button(root,image=img, command=hello,borderwidth=0)
-# but.pack(padx=10,pady=10)
 
 
