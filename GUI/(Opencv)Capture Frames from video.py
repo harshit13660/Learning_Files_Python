@@ -18,3 +18,14 @@ while(True):
 # When everything done, release the capture
 cap.release()
 cv2.destroyAllWindows()
+
+# cap=cv2.VideoCapture("voice.mp4")
+# a=0
+# ret=True
+# os.chdir("C:\\Users\\Harshit\\Desktop\\new")
+# while ret:
+#     ret,frame=cap.read()
+#     if ret==False:
+#         break
+#     cv2.imwrite(f"h{a}.jpg",frame)
+#     a=a+1

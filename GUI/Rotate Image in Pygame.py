@@ -2,16 +2,16 @@ import pygame, sys
 from PIL import Image, ImageTk
 def rotate(surface,angle):
     rota=pygame.transform.rotozoom(surface,angle,1)
-    rec=rota.get_rect(center=(300,300))
+    rec=rota.get_rect(center=(200,500))
     return rota,rec
 
 clock=pygame.time.Clock()
-screen=pygame.display.set_mode([600,600])
+screen=pygame.display.set_mode((0,0),pygame.RESIZABLE)
 
 
 img=pygame.image.load("pen.png")
-img = pygame.transform.scale(img, (300, 300))
-im_rec=img.get_rect(center=(300,300))
+img = pygame.transform.scale(img, (90, 90))
+
 angle=0
 
 while True:
