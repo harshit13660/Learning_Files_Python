@@ -15,19 +15,19 @@ def hello():
     a=a-5
     z=m.rotate(a)
     img=ImageTk.PhotoImage(z)
-    but.config(image=img)
-    but.after(50,hello)
+    lab.config(image=img)
+    lab.after(50,hello)
 
 
 img=ImageTk.PhotoImage(m)
 
-# lab=Label(root,image=img)
-# lab.pack()
+lab=Label(root,image=img)
+lab.pack()
 
-but=Button(root,image=img, command=hello,borderwidth=0)
-but.pack(pady=10)
+# but=Button(root,image=img, command=hello,borderwidth=0)
+# but.pack(pady=10)
 
-
+hello()
 root.mainloop()
 
 
