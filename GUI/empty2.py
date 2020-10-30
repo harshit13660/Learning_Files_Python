@@ -1,11 +1,30 @@
 from tkinter import *
+import time
 
-main=Tk()
+root=Tk()
+root.geometry("600x600")
 
-main['bg']='green'
+def blink():
+    global label
+    label.pack_forget()
 
-photo=PhotoImage(file='pen.png')
-Label(main,image=photo,bg='grey').place(x=20,y=30)
-#your other label or button or ...
-main.wm_attributes("-transparentcolor", 'black')
-main.mainloop()
+    def show():
+        global label
+        label = Label(root, text="Hi THIS IS ME")
+        label.pack()
+        label.after(1000, blink)
+
+    label.after(1000, show)
+
+
+
+
+
+label=Label(root,text="Hi THIS IS ME")
+label.pack()
+
+but=Button(root,text="stop", command=blink)
+but.place(x=10,y=20)
+
+
+root.mainloop()
