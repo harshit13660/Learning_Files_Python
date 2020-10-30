@@ -3,6 +3,14 @@ from PIL import Image,ImageTk
 import pygame
 import time
 import sys
+import pyttsx3
+import datetime
+import speech_recognition as sr
+import pywhatkit as kit
+import wikipedia
+import requests
+import threading
+
 
 # -----------------------I N I T I A L I S A T I O N------------------
 
@@ -25,6 +33,20 @@ img_backg=ImageTk.PhotoImage(resized)
 lab=Label(root,image=img_backg)
 lab.pack()
 
+engine= pyttsx3.init('sapi5')
+engine.setProperty('rate',180)
+
+r=sr.Recognizer()
+r1=sr.Recognizer()
+
+mic=sr.Microphone()
+
+r.energy_threshold=700
+r1.energy_threshold=700
+r.pause_threshold=0.7
+r1.pause_threshold=0.5
+
+
 
 
 # ------------------------F U N C T I O N S--------------
@@ -46,7 +68,7 @@ def start_button_function():
     stop_button.config(state=NORMAL)
     po=start_button.after(40, start_button_function)
 
-#Jarvis start buton spin stopping function
+#Jarvis stop buton stopping function
 def stop_spin():
     """ Stoping start button spin"""
     global start_button
@@ -57,7 +79,7 @@ def stop_spin():
     root.after_cancel(sto)
     start_button.config(image=lop,state=NORMAL,bg="#090909")
     stop_button.config(state=DISABLED)
-
+    Main_Jarvis_Speak(0)
 
 #jarvis heart spining function
 ang=0
@@ -98,9 +120,115 @@ def eye_blink():
 
     bfo=jarvis_Leye_label.after(1000, show_eyes)
 
+#Creating combined main start function
 def main_start_function():
     start_button_function()
     eye_blink()
+    threading.Thread(target=Main_Jarvis_Speak).start()
+
+
+
+#Creating Main Speaking Core Function
+def Main_Jarvis_Speak(termin=1):
+    if termin==0:
+        print("Speak terminated")
+        return
+    else:
+        def speaker(audio):
+            engine.say(audio)
+            engine.runAndWait()
+
+        def wishme():
+            a = datetime.datetime.now().hour
+            if a < 12:
+                speaker("Good Morning")
+            elif a >= 12 and a < 16:
+                speaker("Good Afternoon")
+            else:
+                speaker("Good Evening")
+            speaker("How can i help you")
+
+        def take():
+            try:
+                with mic as source:
+                    print("Speak......")
+                    audio = r.listen(source)
+                    data = r.recognize_google(audio)
+                    if termin==0:
+                        return "exit"
+                    else:
+                        return data.lower()
+
+            except Exception as e:
+                if termin==0:
+                    return "exit"
+
+                speaker("Sorry! Please say again")
+                take()
+
+        def awake():
+            print("Say! ( Jarvis ) to awake......")
+            w = 0
+            while w != 1:
+                try:
+                    with mic as so:
+                        con = r1.listen(so)
+                        jag = r1.recognize_google(con)
+                        print(jag)
+                        if jag == "Jarvis":
+                            speaker("Yes Sir!")
+                            w = 1
+                except Exception as e:
+                    pass
+
+        if __name__ == "__main__":
+            wishme()
+            while True:
+                query = take()
+                if query != None:
+                    print(query)
+
+                    if 'hi jarvis' in query:
+                        speaker(" Hi am jarvis! i can do basic tasks for you like playing songs,search, wikipedia, and weather forcast ")
+
+                    elif 'tell me about' in query:
+                        newsr = query.split("about", 1)
+                        if newsr[1] == "":
+                            speaker("about what?")
+                            continue
+                        a = wikipedia.summary(newsr[1], sentences=3)
+                        print(a)
+                        speaker(a)
+                        awake()
+
+                    elif 'search' in query:
+                        newsr = query.split("search", 1)
+                        kit.search(newsr[1])
+                        awake()
+
+                    elif 'play song' in query or 'play music' in query:
+                        try:
+                            newsr = query.split("song", 1)
+                            kit.playonyt(newsr[1])
+                            awake()
+                        except Exception as e:
+                            newsr = query.split("music", 1)
+                            kit.playonyt(newsr[1])
+                            awake()
+
+                    elif 'weather' in query:
+                        url = 'http://api.openweathermap.org/data/2.5/weather?q=Delhi&appid=68355932828ffd7a3e72c27cad53d8ee'
+                        a = requests.get(url).json()
+                        wea = a['weather'][0]['description']
+                        tem1 = (a['main']['temp_min']) - 273.15
+                        tem2 = (a['main']['temp_max']) - 273.15
+                        speaker(
+                            f"Today weather is {wea} with minimum temperature {tem1} degree celcius and Maximum temperature {tem2} degree celcius")
+
+                    elif 'exit' in query:
+                        exit()
+                    else:
+                        speaker("Sorry! i didn't recognize speak again")
 
 
 root.protocol("WM_DELETE_WINDOW", sys.exit)
