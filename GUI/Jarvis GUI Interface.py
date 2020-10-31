@@ -46,6 +46,8 @@ r1.energy_threshold=700
 r.pause_threshold=0.7
 r1.pause_threshold=0.5
 
+termin=1
+
 
 
 
@@ -72,6 +74,7 @@ def start_button_function():
 def stop_spin():
     """ Stoping start button spin"""
     global start_button
+    global termin
     jarvis_Leye_label.place_forget()
     jarvis_Reye_label.place_forget()
     root.after_cancel(po)
@@ -79,7 +82,7 @@ def stop_spin():
     root.after_cancel(sto)
     start_button.config(image=lop,state=NORMAL,bg="#090909")
     stop_button.config(state=DISABLED)
-    Main_Jarvis_Speak(0)
+    termin=0
 
 #jarvis heart spining function
 ang=0
@@ -122,17 +125,19 @@ def eye_blink():
 
 #Creating combined main start function
 def main_start_function():
+    global termin
     start_button_function()
     eye_blink()
+    termin=1
     threading.Thread(target=Main_Jarvis_Speak).start()
 
 
 
 #Creating Main Speaking Core Function
-def Main_Jarvis_Speak(termin=1):
+def Main_Jarvis_Speak():
     if termin==0:
         print("Speak terminated")
-        return
+        return None
     else:
         def speaker(audio):
             engine.say(audio)
@@ -152,19 +157,20 @@ def Main_Jarvis_Speak(termin=1):
             try:
                 with mic as source:
                     print("Speak......")
+                    # bottom_canvas.itemconfig()
                     audio = r.listen(source)
                     data = r.recognize_google(audio)
                     if termin==0:
-                        return "exit"
+                        return None
                     else:
                         return data.lower()
 
             except Exception as e:
                 if termin==0:
-                    return "exit"
-
-                speaker("Sorry! Please say again")
-                take()
+                    return None
+                else:
+                    speaker("Sorry! Please say again")
+                    take()
 
         def awake():
             print("Say! ( Jarvis ) to awake......")
@@ -183,7 +189,7 @@ def Main_Jarvis_Speak(termin=1):
 
         if __name__ == "__main__":
             wishme()
-            while True:
+            while termin!=0:
                 query = take()
                 if query != None:
                     print(query)
@@ -276,6 +282,26 @@ jarvis_Reye = ImageTk.PhotoImage(resize_jarvis_Reye)
 #Creating Jarvis Right Eye Label
 jarvis_Reye_label = Label(root,image=jarvis_Reye,bg="#081f2d")
 jarvis_Reye_label.place(x=703,y=166)
+
+# -----------------------C A N V A S -------------------
+
+bottom_canvas= Canvas(root, height=40,width=400,bg="#090909")
+bottom_canvas.place(x=490,y=670)
+
+top_right_canvas = Canvas(root, height=140,width=500,bg="#090909",highlightthickness=1)
+top_right_canvas.place(x=800,y=25)
+top_right_canvas.create_text(50,65,text="SPEAK",font="Ethnocentric 11 bold",fill="#e8feff")
+top_right_canvas.create_line(84,63,130,63,fill="white",)
+top_right_canvas.create_line(130,0,130,300,fill="white")
+top_right_canvas.create_text(200,13,text="Hi Jarvis",font="Ethnocentric 11 bold",fill="#e8feff")
+top_right_canvas.create_text(290,33,text="Tell Me About 'querry'" ,font="Ethnocentric 11 bold",fill="#e8feff")
+top_right_canvas.create_text(248,55,text="Search 'querry'",font="Ethnocentric 11 bold",fill="#e8feff")
+top_right_canvas.create_text(288,75,text="Play Song 'Song Name'",font="Ethnocentric 11 bold",fill="#e8feff")
+top_right_canvas.create_text(258,94,text="Weather Forcast",font="Ethnocentric 11 bold",fill="#e8feff")
+top_right_canvas.create_text(167,113,text="Exit",font="Ethnocentric 11 bold",fill="#e8feff")
+
+top_left_canvas = Canvas(root, height=30,width=350)
+top_left_canvas.place(x=60,y=40)
 
 
 
