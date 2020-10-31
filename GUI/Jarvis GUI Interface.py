@@ -10,23 +10,21 @@ import pywhatkit as kit
 import wikipedia
 import requests
 import threading
+import os
 
 
 # -----------------------I N I T I A L I S A T I O N------------------
 
 #Initialize tkinter and window
 root=Tk()
-a=root.geometry('1980x1600')
+a=root.geometry('1366x768')
 root.minsize(200,300)
 root.title("AI-JARVIS")
 
-#Get window width and height
-h=root.winfo_screenheight()
-w=root.winfo_screenwidth()
 
 #Open Background Iron Man Jarvis Image
 pic=Image.open("background.png")
-resized=pic.resize((w,h),Image.ANTIALIAS)
+resized=pic.resize((1366,768),Image.ANTIALIAS)
 
 #Set Background image
 img_backg=ImageTk.PhotoImage(resized)
@@ -115,10 +113,10 @@ def eye_blink():
         global sto
 
         jarvis_Reye_label = Label(root, image=jarvis_Reye, bg="#081f2d")
-        jarvis_Reye_label.place(x=703, y=166)
+        jarvis_Reye_label.place(x=703, y=180)
 
         jarvis_Leye_label = Label(root, image=jarvis_Leye, bg="#081f2d")
-        jarvis_Leye_label.place(x=619, y=166)
+        jarvis_Leye_label.place(x=619, y=180)
         sto=jarvis_Leye_label.after(1000, eye_blink)
 
     bfo=jarvis_Leye_label.after(1000, show_eyes)
@@ -157,8 +155,8 @@ def Main_Jarvis_Speak():
             try:
                 with mic as source:
                     print("Speak......")
-                    # bottom_canvas.itemconfig()
-                    audio = r.listen(source)
+                    # bottom_canvas.itemconfig(b_canvas,texr="Speak.....")
+                    audio = r.listen(source,timeout=7)
                     data = r.recognize_google(audio)
                     if termin==0:
                         return None
@@ -237,7 +235,13 @@ def Main_Jarvis_Speak():
                         speaker("Sorry! i didn't recognize speak again")
 
 
-root.protocol("WM_DELETE_WINDOW", sys.exit)
+#Window kill function
+def kill():
+    os._exit(1)
+
+
+
+root.protocol("WM_DELETE_WINDOW", kill)
 
 #           ---------------L A B E L S--------------------
 
@@ -272,7 +276,7 @@ jarvis_Leye= ImageTk.PhotoImage(resize_jarvis_Leye)
 
 #Creating Jarvis Left Eye Label
 jarvis_Leye_label=Label(root,image=jarvis_Leye,bg="#081f2d")
-jarvis_Leye_label.place(x=619,y=166)
+jarvis_Leye_label.place(x=619,y=180)
 
 # Creating jarvis right eye
 jarvis_Reye_initialization = Image.open("right-eye.png")
@@ -281,12 +285,13 @@ jarvis_Reye = ImageTk.PhotoImage(resize_jarvis_Reye)
 
 #Creating Jarvis Right Eye Label
 jarvis_Reye_label = Label(root,image=jarvis_Reye,bg="#081f2d")
-jarvis_Reye_label.place(x=703,y=166)
+jarvis_Reye_label.place(x=703,y=180)
 
 # -----------------------C A N V A S -------------------
 
 bottom_canvas= Canvas(root, height=40,width=400,bg="#090909")
 bottom_canvas.place(x=490,y=670)
+b_canvas=bottom_canvas.create_text(190,20,text="J.A.R.V.I.S",font="Ethnocentric 11 bold",fill="white")
 
 top_right_canvas = Canvas(root, height=140,width=500,bg="#090909",highlightthickness=1)
 top_right_canvas.place(x=800,y=25)
@@ -304,7 +309,7 @@ top_left_canvas = Canvas(root, height=30,width=350)
 top_left_canvas.place(x=60,y=40)
 
 
-
+root.resizable(0,0)
 heart_spin()
 root.mainloop()
 
