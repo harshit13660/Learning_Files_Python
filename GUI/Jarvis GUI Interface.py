@@ -1,8 +1,7 @@
 from tkinter import *
 from PIL import Image,ImageTk
-import pygame
-import time
-import sys
+from urllib.request import urlopen
+
 import pyttsx3
 import datetime
 import speech_recognition as sr
@@ -39,13 +38,12 @@ r1=sr.Recognizer()
 
 mic=sr.Microphone()
 
-r.energy_threshold=700
-r1.energy_threshold=700
+r.energy_threshold=1000
+r1.energy_threshold=800
 r.pause_threshold=0.7
 r1.pause_threshold=0.5
 
 termin=1
-
 
 
 
@@ -78,9 +76,11 @@ def stop_spin():
     root.after_cancel(po)
     root.after_cancel(bfo)
     root.after_cancel(sto)
-    start_button.config(image=lop,state=NORMAL,bg="#090909")
+    start_button.config(image=lop, state=NORMAL, bg="#090909")
     stop_button.config(state=DISABLED)
     termin=0
+    lab_canvas.config(text="Terminated")
+    lab_canvas.place(x=620, y=680)
 
 #jarvis heart spining function
 ang=0
@@ -155,7 +155,8 @@ def Main_Jarvis_Speak():
             try:
                 with mic as source:
                     print("Speak......")
-                    # bottom_canvas.itemconfig(b_canvas,texr="Speak.....")
+                    lab_canvas.config(text="SPEAK....")
+                    lab_canvas.place(x=620,y=680)
                     audio = r.listen(source,timeout=7)
                     data = r.recognize_google(audio)
                     if termin==0:
@@ -167,11 +168,16 @@ def Main_Jarvis_Speak():
                 if termin==0:
                     return None
                 else:
+                    lab_canvas.config(text="Sorry! Please Say Again")
+                    lab_canvas.place(x=530,y=680)
+
                     speaker("Sorry! Please say again")
                     take()
 
         def awake():
             print("Say! ( Jarvis ) to awake......")
+            lab_canvas.config(text="Say! (Jarvis) to awake...")
+            lab_canvas.place(x=530,y=680)
             w = 0
             while w != 1:
                 try:
@@ -226,8 +232,7 @@ def Main_Jarvis_Speak():
                         wea = a['weather'][0]['description']
                         tem1 = (a['main']['temp_min']) - 273.15
                         tem2 = (a['main']['temp_max']) - 273.15
-                        speaker(
-                            f"Today weather is {wea} with minimum temperature {tem1} degree celcius and Maximum temperature {tem2} degree celcius")
+                        speaker(f"Today weather is {wea} with minimum temperature {tem1} degree celcius and Maximum temperature {tem2} degree celcius")
 
                     elif 'exit' in query:
                         exit()
@@ -238,6 +243,19 @@ def Main_Jarvis_Speak():
 #Window kill function
 def kill():
     os._exit(1)
+
+#Function to check internet connection
+def internet():
+    global termin
+    while True:
+        try:
+            urlopen('https://www.google.com',timeout=1)
+            canvas_internet.config(text="Internet Connection")
+
+        except Exception as e:
+            termin=0
+            canvas_internet.config(text="No Internet Connection",fg="red")
+
 
 
 
@@ -291,7 +309,8 @@ jarvis_Reye_label.place(x=703,y=180)
 
 bottom_canvas= Canvas(root, height=40,width=400,bg="#090909")
 bottom_canvas.place(x=490,y=670)
-b_canvas=bottom_canvas.create_text(190,20,text="J.A.R.V.I.S",font="Ethnocentric 11 bold",fill="white")
+lab_canvas=Label(root,text="J.A.R.V.I.S",font="Ethnocentric 11 bold",fg="white",bg="#090909")
+lab_canvas.place(x=620,y=680)
 
 top_right_canvas = Canvas(root, height=140,width=500,bg="#090909",highlightthickness=1)
 top_right_canvas.place(x=800,y=25)
@@ -305,11 +324,16 @@ top_right_canvas.create_text(288,75,text="Play Song 'Song Name'",font="Ethnocent
 top_right_canvas.create_text(258,94,text="Weather Forcast",font="Ethnocentric 11 bold",fill="#e8feff")
 top_right_canvas.create_text(167,113,text="Exit",font="Ethnocentric 11 bold",fill="#e8feff")
 
-top_left_canvas = Canvas(root, height=30,width=350)
+top_left_canvas = Canvas(root, height=30,width=350,bg="#090909",highlightthickness=1)
 top_left_canvas.place(x=60,y=40)
+
+canvas_internet=Label(root,text=" ",font="Ethnocentric 11 bold", fg="#e8feff",bg="#090909")
+canvas_internet.place(x=75,y=45)
+
 
 
 root.resizable(0,0)
+threading.Thread(target=internet).start()
 heart_spin()
 root.mainloop()
 

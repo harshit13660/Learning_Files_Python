@@ -1,13 +1,12 @@
-from tkinter import font
-from tkinter import *
-root=Tk()
+from urllib.request import urlopen
 
 
-my=list(font.families())
-for i in my:
-    if "Ethnocentric" in i:
-        print("found")
-        break
+def inter():
+    try:
+        urlopen('https://www.google.com',timeout=1)
+        print("internet is working")
 
+    except Exception as e:
+        print("no internet")
 
-root.mainloop()
+inter()
