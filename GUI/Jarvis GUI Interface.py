@@ -38,8 +38,8 @@ r1=sr.Recognizer()
 
 mic=sr.Microphone()
 
-r.energy_threshold=1000
-r1.energy_threshold=800
+r.energy_threshold=900
+r1.energy_threshold=900
 r.pause_threshold=0.7
 r1.pause_threshold=0.5
 
@@ -235,7 +235,7 @@ def Main_Jarvis_Speak():
                         speaker(f"Today weather is {wea} with minimum temperature {tem1} degree celcius and Maximum temperature {tem2} degree celcius")
 
                     elif 'exit' in query:
-                        exit()
+                        os._exit(1)
                     else:
                         speaker("Sorry! i didn't recognize speak again")
 
@@ -250,7 +250,7 @@ def internet():
     while True:
         try:
             urlopen('https://www.google.com',timeout=1)
-            canvas_internet.config(text="Internet Connection")
+            canvas_internet.config(text="Internet Connection",fg="white")
 
         except Exception as e:
             termin=0
