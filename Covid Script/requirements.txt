@@ -1,2 +1,4 @@
-pushbullet
-requests
+
+pushbullet.py==0.12.0
+
+requests==2.24.0
