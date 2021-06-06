@@ -38,10 +38,13 @@ r1=sr.Recognizer()
 
 mic=sr.Microphone()
 
-r.energy_threshold=950
-r1.energy_threshold=950
-r.pause_threshold=0.7
-r1.pause_threshold=0.5
+r.dynamic_energy_threshold=True
+r.dynamic_energy_adjustment_ratio=1.5
+
+r1.dynamic_energy_threshold=True
+r1.dynamic_energy_adjustment_ratio=1.5
+#https://github.com/Uberi/speech_recognition/blob/master/reference/library-reference.rst
+# For Speech recognition Documentation
 
 termin=1
 check_flag=0
@@ -141,13 +144,13 @@ def canvas_expand():
         commands_Label.config(width=(canvas_size)+200, height=(canvas_size),highlightthickness=1)
         canvas_size += 10
         time.sleep(0.01)
-    commands_Label.create_text(350,40,text="Hi Jarvis",font="Ethnocentric 11 bold",fill='white')
+    commands_Label.create_text(350,40,text="Who Are You",font="Ethnocentric 11 bold",fill='white')
     commands_Label.create_text(350, 70, text="Tell Me About 'querry'", font="Ethnocentric 11 bold", fill='white')
     commands_Label.create_text(350, 100, text="Play Song 'song name'", font="Ethnocentric 11 bold", fill='white')
     commands_Label.create_text(350, 130, text="Search 'querry'", font="Ethnocentric 11 bold", fill='white')
     commands_Label.create_text(350, 160, text="Weather Forcast", font="Ethnocentric 11 bold", fill='white')
     commands_Label.create_text(350, 190, text="Exit", font="Ethnocentric 11 bold", fill='white')
-    commands_Label.create_text(80, 40, text="Hi Jarvis", font="Ethnocentric 11 bold", fill='white')
+    # commands_Label.create_text(80, 40, text="Hi Jarvis", font="Ethnocentric 11 bold", fill='white')
     check_flag = 1
 
 def canvas_contract():
@@ -199,8 +202,9 @@ def Main_Jarvis_Speak():
                     print("Speak......")
                     lab_canvas.config(text="SPEAK....")
                     lab_canvas.place(x=620,y=680)
+                    r.adjust_for_ambient_noise(source)
                     audio = r.listen(source,timeout=7)
-                    data = r.recognize_google(audio)
+                    data = r.recognize_google(audio,language='en-US')
                     if termin==0:
                         return None
                     else:
@@ -217,17 +221,18 @@ def Main_Jarvis_Speak():
                     take()
 
         def awake():
-            print("Say! ( Jarvis ) to awake......")
-            lab_canvas.config(text="Say! (Jarvis) to awake...")
+            print("Say! ( Wake Up) to awake......")
+            lab_canvas.config(text="Say! (Wake Up) to awake...")
             lab_canvas.place(x=530,y=680)
             w = 0
             while w != 1:
                 try:
                     with mic as so:
+                        r1.adjust_for_ambient_noise(so)
                         con = r1.listen(so)
-                        jag = r1.recognize_google(con)
+                        jag = r1.recognize_google(con,language='en-US')
                         print(jag)
-                        if jag == "Jarvis":
+                        if jag == "wake up":
                             speaker("Yes Sir!")
                             w = 1
                 except Exception as e:
@@ -240,7 +245,7 @@ def Main_Jarvis_Speak():
                 if query != None:
                     print(query)
 
-                    if 'hi jarvis' in query:
+                    if 'who are you' in query:
                         speaker(" Hi am jarvis! i can do basic tasks for you like playing songs,search, wikipedia, and weather forcast ")
 
                     elif 'tell me about' in query:
