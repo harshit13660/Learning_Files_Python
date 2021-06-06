@@ -10,7 +10,7 @@ import wikipedia
 import requests
 import threading
 import os
-
+import time
 
 # -----------------------I N I T I A L I S A T I O N------------------
 
@@ -44,7 +44,7 @@ r.pause_threshold=0.7
 r1.pause_threshold=0.5
 
 termin=1
-
+check_flag=0
 
 
 # ------------------------F U N C T I O N S--------------
@@ -103,21 +103,25 @@ def eye_blink():
     global jarvis_Reye_label
     global jarvis_Leye_label
     global bfo
+    global check_flag
 
     jarvis_Reye_label.place_forget()
     jarvis_Leye_label.place_forget()
 
     def show_eyes():
-        global jarvis_Reye_label
-        global jarvis_Leye_label
-        global sto
+        if check_flag==1:
+            eye_blink()
+        elif check_flag==0:
+            global jarvis_Reye_label
+            global jarvis_Leye_label
+            global sto
 
-        jarvis_Reye_label = Label(root, image=jarvis_Reye, bg="#081f2d")
-        jarvis_Reye_label.place(x=703, y=180)
+            jarvis_Reye_label = Label(root, image=jarvis_Reye, bg="#081f2d")
+            jarvis_Reye_label.place(x=703, y=180)
 
-        jarvis_Leye_label = Label(root, image=jarvis_Leye, bg="#081f2d")
-        jarvis_Leye_label.place(x=619, y=180)
-        sto=jarvis_Leye_label.after(1000, eye_blink)
+            jarvis_Leye_label = Label(root, image=jarvis_Leye, bg="#081f2d")
+            jarvis_Leye_label.place(x=619, y=180)
+            sto=jarvis_Leye_label.after(1000, eye_blink)
 
     bfo=jarvis_Leye_label.after(1000, show_eyes)
 
@@ -128,6 +132,44 @@ def main_start_function():
     eye_blink()
     termin=1
     threading.Thread(target=Main_Jarvis_Speak).start()
+
+
+def canvas_expand():
+    canvas_size=0
+    global check_flag
+    while canvas_size != 500:
+        commands_Label.config(width=(canvas_size)+200, height=(canvas_size),highlightthickness=1)
+        canvas_size += 10
+        time.sleep(0.01)
+    commands_Label.create_text(350,40,text="Hi Jarvis",font="Ethnocentric 11 bold",fill='white')
+    commands_Label.create_text(350, 70, text="Tell Me About 'querry'", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 100, text="Play Song 'song name'", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 130, text="Search 'querry'", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 160, text="Weather Forcast", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 190, text="Exit", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(80, 40, text="Hi Jarvis", font="Ethnocentric 11 bold", fill='white')
+    check_flag = 1
+
+def canvas_contract():
+    canvas_size=500
+    global check_flag
+    while canvas_size!=0:
+        commands_Label.config(width=(canvas_size+100),height=(canvas_size),highlightthickness=1)
+        canvas_size-=10
+        time.sleep(0.005)
+    commands_Label.config(highlightthickness=0)
+    check_flag = 0
+
+
+
+def command_list():
+    global check_flag
+    if check_flag==0:
+        command_button.config(fg='grey')
+        threading.Thread(target=canvas_expand).start()
+    elif check_flag==1:
+        command_button.config(fg='white')
+        threading.Thread(target=canvas_contract).start()
 
 
 
@@ -312,23 +354,19 @@ bottom_canvas.place(x=490,y=670)
 lab_canvas=Label(root,text="J.A.R.V.I.S",font="Ethnocentric 11 bold",fg="white",bg="#090909")
 lab_canvas.place(x=620,y=680)
 
-top_right_canvas = Canvas(root, height=140,width=500,bg="#090909",highlightthickness=1)
-top_right_canvas.place(x=800,y=25)
-top_right_canvas.create_text(50,65,text="SPEAK",font="Ethnocentric 11 bold",fill="#e8feff")
-top_right_canvas.create_line(84,63,130,63,fill="white",)
-top_right_canvas.create_line(130,0,130,300,fill="white")
-top_right_canvas.create_text(200,13,text="Hi Jarvis",font="Ethnocentric 11 bold",fill="#e8feff")
-top_right_canvas.create_text(290,33,text="Tell Me About 'querry'" ,font="Ethnocentric 11 bold",fill="#e8feff")
-top_right_canvas.create_text(248,55,text="Search 'querry'",font="Ethnocentric 11 bold",fill="#e8feff")
-top_right_canvas.create_text(288,75,text="Play Song 'Song Name'",font="Ethnocentric 11 bold",fill="#e8feff")
-top_right_canvas.create_text(258,94,text="Weather Forcast",font="Ethnocentric 11 bold",fill="#e8feff")
-top_right_canvas.create_text(167,113,text="Exit",font="Ethnocentric 11 bold",fill="#e8feff")
 
-top_left_canvas = Canvas(root, height=30,width=350,bg="#090909",highlightthickness=1)
-top_left_canvas.place(x=60,y=40)
+#-----------------------Top Left command button-----------------
+command_button=Button(root,text='Commands',command=command_list, font="Ethnocentric 11 bold" ,padx=2, pady=2,bg="#090909",fg="#e8feff",border=10)
+command_button.place(x=80,y=45)
+
+#------------------------Command Label----------------------------
+commands_Label=Canvas(width=1,height=1,bg='#0a0a0a',highlightthickness=1,highlightbackground='#5bc4e8')
+commands_Label.place(x=335,y=66)
+
+
 
 canvas_internet=Label(root,text=" ",font="Ethnocentric 11 bold", fg="#e8feff",bg="#090909")
-canvas_internet.place(x=75,y=45)
+canvas_internet.place(x=1000,y=45)
 
 
 
