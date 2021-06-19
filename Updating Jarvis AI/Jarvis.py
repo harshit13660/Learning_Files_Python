@@ -1,6 +1,9 @@
 from tkinter import *
 from PIL import Image,ImageTk
 from urllib.request import urlopen
+from tkinter import filedialog
+
+
 
 import pyttsx3
 import datetime
@@ -11,7 +14,7 @@ import requests
 import threading
 import os
 import time
-
+import json
 # -----------------------I N I T I A L I S A T I O N------------------
 
 #Initialize tkinter and window
@@ -112,13 +115,12 @@ def eye_blink():
     jarvis_Leye_label.place_forget()
 
     def show_eyes():
+        global jarvis_Reye_label
+        global jarvis_Leye_label
+        global sto
         if check_flag==1:
             eye_blink()
         elif check_flag==0:
-            global jarvis_Reye_label
-            global jarvis_Leye_label
-            global sto
-
             jarvis_Reye_label = Label(root, image=jarvis_Reye, bg="#081f2d")
             jarvis_Reye_label.place(x=703, y=180)
 
@@ -137,42 +139,7 @@ def main_start_function():
     threading.Thread(target=Main_Jarvis_Speak).start()
 
 
-def canvas_expand():
-    canvas_size=0
-    global check_flag
-    while canvas_size != 500:
-        commands_Label.config(width=(canvas_size)+200, height=(canvas_size),highlightthickness=1)
-        canvas_size += 10
-        time.sleep(0.01)
-    commands_Label.create_text(350,40,text="Who Are You",font="Ethnocentric 11 bold",fill='white')
-    commands_Label.create_text(350, 70, text="Tell Me About 'querry'", font="Ethnocentric 11 bold", fill='white')
-    commands_Label.create_text(350, 100, text="Play Song 'song name'", font="Ethnocentric 11 bold", fill='white')
-    commands_Label.create_text(350, 130, text="Search 'querry'", font="Ethnocentric 11 bold", fill='white')
-    commands_Label.create_text(350, 160, text="Weather Forcast", font="Ethnocentric 11 bold", fill='white')
-    commands_Label.create_text(350, 190, text="Exit", font="Ethnocentric 11 bold", fill='white')
-    # commands_Label.create_text(80, 40, text="Hi Jarvis", font="Ethnocentric 11 bold", fill='white')
-    check_flag = 1
 
-def canvas_contract():
-    canvas_size=500
-    global check_flag
-    while canvas_size!=0:
-        commands_Label.config(width=(canvas_size+100),height=(canvas_size),highlightthickness=1)
-        canvas_size-=10
-        time.sleep(0.005)
-    commands_Label.config(highlightthickness=0)
-    check_flag = 0
-
-
-
-def command_list():
-    global check_flag
-    if check_flag==0:
-        command_button.config(fg='grey')
-        threading.Thread(target=canvas_expand).start()
-    elif check_flag==1:
-        command_button.config(fg='white')
-        threading.Thread(target=canvas_contract).start()
 
 
 
@@ -253,17 +220,20 @@ def Main_Jarvis_Speak():
                         if newsr[1] == "":
                             speaker("about what?")
                             continue
+                        speaker("ok")
                         a = wikipedia.summary(newsr[1], sentences=3)
                         print(a)
                         speaker(a)
                         awake()
 
                     elif 'search' in query:
+                        speaker("ok")
                         newsr = query.split("search", 1)
                         kit.search(newsr[1])
                         awake()
 
                     elif 'play song' in query or 'play music' in query:
+                        speaker("ok")
                         try:
                             newsr = query.split("song", 1)
                             kit.playonyt(newsr[1])
@@ -274,17 +244,122 @@ def Main_Jarvis_Speak():
                             awake()
 
                     elif 'weather' in query:
+                        speaker("ok")
                         url = 'http://api.openweathermap.org/data/2.5/weather?q=Delhi&appid=68355932828ffd7a3e72c27cad53d8ee'
                         a = requests.get(url).json()
                         wea = a['weather'][0]['description']
-                        tem1 = (a['main']['temp_min']) - 273.15
-                        tem2 = (a['main']['temp_max']) - 273.15
+                        tem1 = round((a['main']['temp_min']) - 273.15, 2)
+                        tem2 = round((a['main']['temp_max']) - 273.15, 2)
                         speaker(f"Today weather is {wea} with minimum temperature {tem1} degree celcius and Maximum temperature {tem2} degree celcius")
+                        awake()
 
-                    elif 'exit' in query:
+                    elif 'open' in query:
+                        with open('Programs_Dict.json','r') as pd:
+                            program_data=json.load(pd)
+                            for p_data in program_data:
+                                if query.split('open ')[1]==p_data:
+                                    speaker("ok")
+                                    os.startfile(program_data[p_data])
+                                    awake()
+                                    pd.close()
+                                    break
+
+                                elif(list(program_data)[len(list(program_data))-1] != p_data):
+                                    continue
+
+                                else:
+                                    speaker("No Target Found, Please Add Location")
+
+                                    def user_entry(top_argument,top_win):
+                                        write_to_dict = eval('{ "%s" : "%s" }' % (top_argument.lower(), root.filename.name))
+                                        program_data.update(write_to_dict)
+                                        print(program_data)
+                                        with open('Programs_Dict.json', 'w') as pd:
+                                            pd.write(json.dumps(program_data))
+                                            pd.close()
+                                        top_win.destroy()
+
+
+
+                                    def top_asking():
+                                        top_win = Toplevel()
+                                        top_win.title("Add Files")
+                                        top_win.geometry("400x100+483+234")
+                                        top_win.config(background='#5bc4e8')
+                                        top_Label = Label(top_win, text='How Would You Like To Call It?',bg='Black',fg='white').pack()
+                                        speaker("How Would You Like To Call It?")
+                                        top_Entry = Entry(top_win, width=80,bg='Black',fg="White",font=('Arial',13))
+                                        top_Entry.pack()
+                                        top_asking_button=Button(top_win,text="Ok",command=lambda:user_entry(top_Entry.get(),top_win)).pack()
+
+                                    root.filename= filedialog.askopenfile(initialdir='C:\Program Files',title="Select a File ",filetypes=(("exe files",".exe"),("all files","*.*")))
+                                    if root.filename!= None:
+                                        top_asking()
+                                        break
+                            awake()
+
+
+                    elif 'turn off' in query:
                         os._exit(1)
                     else:
                         speaker("Sorry! i didn't recognize speak again")
+
+
+
+def canvas_expand():
+    canvas_size=0
+    global check_flag
+    while canvas_size != 500:
+        commands_Label.config(width=(canvas_size)+200, height=(canvas_size),highlightthickness=1)
+        canvas_size += 10
+        time.sleep(0.01)
+    commands_Label.create_text(350,40,text="Who Are You",font="Ethnocentric 11 bold",fill='white')
+    commands_Label.create_text(350, 70, text="Tell Me About 'querry'", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 100, text="Play Song 'song name'", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 130, text="Search 'querry'", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 160, text="Weather Forcast", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 190, text="Open 'Filename'", font="Ethnocentric 11 bold", fill='white')
+    commands_Label.create_text(350, 220, text="Turn Off", font="Ethnocentric 11 bold", fill='white')
+
+    check_flag = 1
+
+def canvas_contract():
+    canvas_size=500
+    global check_flag
+    while canvas_size!=0:
+        commands_Label.config(width=(canvas_size+100),height=(canvas_size),highlightthickness=1)
+        canvas_size-=10
+        time.sleep(0.005)
+    commands_Label.config(highlightthickness=0)
+    check_flag = 0
+
+
+def command_list():
+    global check_flag
+    if po!= None:
+        stop_spin()
+        if check_flag==0:
+            jarvis_Reye_label.place_forget()
+            jarvis_Leye_label.place_forget()
+            command_button.config(fg='grey')
+            threading.Thread(target=canvas_expand).start()
+
+        elif check_flag==1:
+            command_button.config(fg='white')
+            threading.Thread(target=canvas_contract).start()
+    else:
+        if check_flag == 0:
+            jarvis_Reye_label.place_forget()
+            jarvis_Leye_label.place_forget()
+            command_button.config(fg='grey')
+            threading.Thread(target=canvas_expand).start()
+
+        elif check_flag == 1:
+            command_button.config(fg='white')
+            threading.Thread(target=canvas_contract).start()
+
+
+
 
 
 #Window kill function
@@ -365,7 +440,7 @@ command_button=Button(root,text='Commands',command=command_list, font="Ethnocent
 command_button.place(x=80,y=45)
 
 #------------------------Command Label----------------------------
-commands_Label=Canvas(width=1,height=1,bg='#0a0a0a',highlightthickness=1,highlightbackground='#5bc4e8')
+commands_Label=Canvas(width=1,height=1,bg='#0a0a0a',highlightthickness=0,highlightbackground='#5bc4e8')
 commands_Label.place(x=335,y=66)
 
 
