@@ -2,8 +2,9 @@ import smtplib
 
 sender_email = "johnwick13660@gmail.com"
 rec_email = "tomarharsh8@gmail.com"
-password = input(str("Please enter your password : "))
-message = "Hey, this was sent using python"
+password = "johnyzindabad"
+message = f"Subject: Confirm Your Mail\n\nThis is my text"
+print(message)
 
 server = smtplib.SMTP('smtp.gmail.com', 587)
 server.ehlo()
