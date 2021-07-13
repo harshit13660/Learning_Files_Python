@@ -1,5 +1,3 @@
-a=1
-while not (a==5):
-    print(a)
-    a+=1
-
+dict={"game": {"url": "https://www.cowin.gov.in/", "data": {"/html/body/app-root/app-header/header/div[3]/div/div[1]/div/nav/div[2]/div/ul/li[1]/button": "", "/html/body/div[2]/div[2]/div/div/div/ul/li[2]/a": ""}}, "task": {"url": "https://www.codewithharry.com/", "data": {"/html/body/app-root/app-header/nav/div/ul/li[4]/a": "", "/html/body/app-root/app-header/nav/div/ul/li[3]/a": ""}}, "facebook": {"url": "https://www.facebook.com/", "data": {"/html/body/div[1]/div[2]/div[1]/div/div/div/div[2]/div/div[1]/form/div[1]/div[1]/input": "tomarharsh8@gmail.com", "/html/body/div[1]/div[2]/div[1]/div/div/div/div[2]/div/div[1]/form/div[1]/div[2]/div/input": "13660Harsh", "/html/body/div[1]/div[2]/div[1]/div/div/div/div[2]/div/div[1]/form/div[2]/button": ""}}}
+for i in dict.values():
+    print(dict[i]['url'])

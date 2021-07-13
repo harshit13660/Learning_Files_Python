@@ -1,18 +1,28 @@
-from functools import partial
-from tkinter import *
+from selenium import webdriver
 
-root=Tk()
+import time
+import pyautogui
+from pynput.mouse import Listener
+from pynput import keyboard
+from tkinter import Tk
+import ast
+import json
 
-c=[]
+dict_actions={}
 
-def a(v):
-    x=c[int(v)]
-    x.destroy()
+alt_pressed=None
+keyboard_check_listner=None
+alt_check_flag=0
+chrome_options=webdriver.ChromeOptions()
+chrome_options.add_extension('xpath-Finder.crx')
+driver=webdriver.Chrome(executable_path="chromedriver.exe",options=chrome_options)
 
-for i in range(5):
-    k=Button(root,text=str(i),command=lambda p=i:a(p))
-    k.pack()
-    c.append(k)
+driver.get("https://www.cowin.gov.in/")
 
-print(c)
-root.mainloop()
+
+
+# get_xpath()
+
+
+
+test()
